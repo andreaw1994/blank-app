@@ -59,4 +59,4 @@ fig.set_size_inches(28.5, 15.5)
 
 ax1.scatter(data[data["zero_time"] > datetime.timedelta()]["datetime"], data[data["zero_time"] > datetime.timedelta()]["zero_time"].dt.total_seconds())
 
-plt.show(
+plt.show()
