@@ -5,6 +5,11 @@ import streamlit as st
 #from IPython.display import display
 
 st.title("STE1 Manufacturing Analyzer")
+
+st.write(
+    "TO DO: Converter that takes error, error code and continuous data file in XLSX format as input, and outputs MasterCSVs."
+)
+
 st.write(
     "This app allows you to interactively visualize and analyze key performance metrics and error patterns of a STE1 production run."
 )
