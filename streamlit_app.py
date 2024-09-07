@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 import datetime
 from functools import reduce
 
@@ -51,7 +53,6 @@ for i, row in enumerate(data.itertuples()):
 
 sorted_times = data[data["zero_time"] > datetime.timedelta()]["zero_time"].sort_values(ascending = False)
 
-import matplotlib.pyplot as plt
 
 fig, ax1 = plt.subplots()
 fig.set_size_inches(28.5, 15.5)
