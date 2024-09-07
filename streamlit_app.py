@@ -92,10 +92,5 @@ ax1.plot(data[data["good_objects"] >= 5]["datetime"], data[data["good_objects"] 
 ax2.scatter(data.iloc[indices]["datetime"],
             data.iloc[indices]["description"], c = 'r')
 ax3.stem(q99_df["datetime"] - q99_df["zero_time"], q99_df["zero_time"])
-ax2.scatter(data[(data["code"] == 1) & (data["datetime"] >= "2024-05-15 09:00:00") & (data["derivative"] == 0)]["datetime"],
-            data[(data["code"] == 1) & (data["datetime"] >= "2024-05-15 09:00:00") & (data["derivative"] == 0)]["error_code"], c = "orange")
-ax1.bar(x = q99_df["datetime"] - q99_df["zero_time"],
-        height = data.iloc[data[data["datetime"].isin(start)].index.values.astype(int) - 1]["good_objects"].dropna(),
-        width = data[(data["datetime"] >= "2024-05-15 09:00:00") & data["99q"]]["zero_time"], align = "edge")
 
 st.pyplot(fig)
