@@ -98,39 +98,42 @@ st.pyplot(fig)
 #--------------------------------
 #Lukas script:
 
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+
 # Part 2: Upload CSV Files
 st.write("### Step 1: Upload Your CSV Files")
 uploaded_files = st.file_uploader("Choose CSV files", type="csv", accept_multiple_files=True)
 
-if len(uploaded_files) != 3:
-    st.error("Please upload exactly three CSV files.")
-else:
-    # Part 3: Read and Process Uploaded Files
-    def process_csv(file, column_index):
-        # Load the CSV file into a pandas DataFrame
-        data = pd.read_csv(file)
+# Part 3: Read and Process Uploaded Files
+def process_csv(file, column_index):
+    # Load the CSV file into a pandas DataFrame
+    data = pd.read_csv(file)
 
-        # Copy the specified column to a new column at the end
-        data['good_copy'] = data.iloc[:, column_index]  # Assuming 'D' is the column to copy
+    # Copy the specified column to a new column at the end
+    data['good_copy'] = data.iloc[:, column_index]  # Assuming 'D' is the column to copy
 
-        # Fill any blanks in the new column 'good_copy' with the previous value using ffill()
-        data['good_copy'] = data['good_copy'].ffill()
+    # Fill any blanks in the new column 'good_copy' with the previous value using ffill()
+    data['good_copy'] = data['good_copy'].ffill()
 
-        # Calculate the difference between the current value and the previous value in 'good_copy'
-        data['difference'] = data['good_copy'].diff()
+    # Calculate the difference between the current value and the previous value in 'good_copy'
+    data['difference'] = data['good_copy'].diff()
 
-        return data
+    return data
 
-    # Process each CSV file in memory
-    data1 = process_csv(uploaded_files[0], 3)
-    data2 = process_csv(uploaded_files[1], 3)
-    data3 = process_csv(uploaded_files[2], 3)
+if uploaded_files:
+    # Part 4: Process and store each CSV file in a dictionary
+    data_dict = {}
+    for i, file in enumerate(uploaded_files):
+        data_dict[f"Dataset {i+1}"] = process_csv(file, 3)
 
+    # Show a preview of the first uploaded file
     st.write("### Step 2: Data Preview")
     st.write("Preview of the first uploaded file:")
-    st.dataframe(data1.head())
+    st.dataframe(data_dict["Dataset 1"].head())
 
-    # Part 4: Plotting Function
+    # Part 5: Plotting Function
     def plot_data(data, dataset_name, num_to_plot):
         try:
             # Filter out the rows where 'error_code' is 1705
@@ -163,17 +166,19 @@ else:
         except Exception as e:
             st.error(f"An error occurred while plotting: {e}")
 
-    # Part 5: User Interface for Plotting
+    # Part 6: User Interface for Plotting
     st.write("### Step 3: Plot Data")
-    dataset = st.selectbox("Select Dataset", ["ppq1", "ppq2", "ppq3"])
+
+    # Dynamically create a selection box with the uploaded datasets
+    dataset_name = st.selectbox("Select Dataset", list(data_dict.keys()))
 
     # Adding a slider to select the number of error messages to plot
     num_to_plot = st.slider("Select the number of error messages to plot", min_value=1, max_value=50, value=10)
 
+    # Plot the selected dataset when the button is pressed
     if st.button("Plot Data"):
-        if dataset == 'ppq1':
-            plot_data(data1, 'ppq1', num_to_plot)
-        elif dataset == 'ppq2':
-            plot_data(data2, 'ppq2', num_to_plot)
-        elif dataset == 'ppq3':
-            plot_data(data3, 'ppq3', num_to_plot)
+        plot_data(data_dict[dataset_name], dataset_name, num_to_plot)
+
+else:
+    st.error("Please upload at least one CSV file.")
+
