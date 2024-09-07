@@ -52,9 +52,9 @@ for i, row in enumerate(data.itertuples()):
 
 sorted_times = data[data["zero_time"] > datetime.timedelta()]["zero_time"].sort_values(ascending = False)
 
+import matplotlib.pyplot as plt
+
 fig, ax1 = plt.subplots()
 fig.set_size_inches(28.5, 15.5)
-
-import matplotlib.pyplot as plt
 
 ax1.scatter(data[data["zero_time"] > datetime.timedelta()]["datetime"], data[data["zero_time"] > datetime.timedelta()]["zero_time"].dt.total_seconds())
