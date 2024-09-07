@@ -19,7 +19,7 @@ st.write(
 )
 
 #--------------------------------
-#Lukas script:
+#Adapted version of Lukas' script below
 
 import streamlit as st
 import pandas as pd
@@ -108,11 +108,9 @@ else:
     st.error("Please upload at least one CSV file.")
 
 #--------------------------------
-#Josh script
+#Adapted version of Josh's script below
 
-# Continuation of the previous script...
-
-# Step 7: Use the currently selected dataset (`data_dict[dataset_name]`)
+# Part 7: Use the currently selected dataset (`data_dict[dataset_name]`)
 data = data_dict[dataset_name]  # Set `data` to the selected dataset
 
 # Convert the "datetime" column to datetime format
