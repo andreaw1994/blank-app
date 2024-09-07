@@ -1,8 +1,8 @@
 import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import ipywidgets as widgets
-from IPython.display import display
+#import pandas as pd
+#import matplotlib.pyplot as plt
+#import ipywidgets as widgets
+#from IPython.display import display
 
 st.title("STE1 Manufacturing Analyzer")
 st.write(
