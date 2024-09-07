@@ -31,7 +31,7 @@ data["datetime"] = pd.to_datetime(data["datetime"])
 data["derivative_good_objects"] = data[data["good_objects"].notna()]["good_objects"].diff() / data[data["good_objects"].notna()]["datetime"].diff().dt.total_seconds()
 data["derivative_good_objects"] = data["derivative_good_objects"].fillna(0)
 
-data
+#data
 
 data["zero_time"] = datetime.timedelta()
 prev_der = None
