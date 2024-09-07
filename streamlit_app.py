@@ -69,3 +69,32 @@ q99 = data[data["zero_time"] != datetime.timedelta()]["zero_time"].quantile(0.99
 q99_df = data[data["zero_time"].dt.total_seconds() >= q99.total_seconds()]
 data.loc[data["zero_time"] >= q99, "99q"] = True
 data.fillna({"99q" : False}, inplace = True)
+
+errors = []
+indices = []
+good_counter = []
+for i in (q99_df["datetime"] - q99_df["zero_time"]):
+    # This controls the amount of seconds before and after the start of the pause that we look for errors in.
+    error_code = data[(data["datetime"] >= (i - datetime.timedelta(seconds = 10))) & (data["datetime"] <= (i + datetime.timedelta(seconds = 10)))]["description"]
+    errors.extend(error_code[error_code.notna()].values)
+    indices.extend(error_code[error_code.notna()].index.values.astype(int))
+
+pd.DataFrame(errors).value_counts()
+
+fig, ax1 = plt.subplots()
+fig.set_size_inches(28.5, 15.5)
+
+ax2 = ax1.twinx()
+ax3 = ax1.twinx()
+ax3.spines['right'].set_position(('outward', -40))  # Move the 3rd axis outward
+ax1.plot(data[data["good_objects"] >= 5]["datetime"], data[data["good_objects"] >= 5]["good_objects"].ffill(), c='b')
+ax1.plot(data[data["good_objects"] >= 5]["datetime"], data[data["good_objects"] >= 5]["inactive_time"].ffill(), c='g')
+ax2.scatter(data.iloc[indices]["datetime"],
+            data.iloc[indices]["description"], c = 'r')
+ax3.stem(q99_df["datetime"] - q99_df["zero_time"], q99_df["zero_time"])
+# ax2.scatter(data[(data["code"] == 1) & (data["datetime"] >= "2024-05-15 09:00:00") & (data["derivative"] == 0)]["datetime"],
+#             data[(data["code"] == 1) & (data["datetime"] >= "2024-05-15 09:00:00") & (data["derivative"] == 0)]["error_code"], c = "orange")
+# ax1.bar(x = q99_df["datetime"] - q99_df["zero_time"],
+#         height = data.iloc[data[data["datetime"].isin(start)].index.values.astype(int) - 1]["good_objects"].dropna(),
+#         width = data[(data["datetime"] >= "2024-05-15 09:00:00") & data["99q"]]["zero_time"], align = "edge")
+
