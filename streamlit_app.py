@@ -305,8 +305,9 @@ ax1.plot(data[data["good_objects"] >= 5]["datetime"],
 ax2.scatter(data.iloc[indices]["datetime"], 
             data.iloc[indices]["description"], c='r', label='Errors')
 
-# Plot stem plot for pause durations (top 1%) on the third axis
-ax3.stem(q99_df["datetime"] - q99_df["zero_time"], q99_df["zero_time"], basefmt=" ", linefmt='m-', markerfmt='mo', label='Pause Duration (top 1%)')
+# Plot stem plot for pause durations (top 1%) on the third axis with blue color
+ax3.stem(q99_df["datetime"] - q99_df["zero_time"], q99_df["zero_time"], 
+         basefmt=" ", linefmt='b-', markerfmt='bo', label='Pause Duration (top 1%)')
 
 # Add labels, title, and legends
 ax1.set_xlabel('Datetime', fontsize=14)
