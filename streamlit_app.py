@@ -60,3 +60,12 @@ fig.set_size_inches(28.5, 15.5)
 ax1.scatter(data[data["zero_time"] > datetime.timedelta()]["datetime"], data[data["zero_time"] > datetime.timedelta()]["zero_time"].dt.total_seconds())
 
 st.pyplot(fig)
+
+
+
+
+# Change the quantile value here, affects the lower limit for the pause duration.
+q99 = data[data["zero_time"] != datetime.timedelta()]["zero_time"].quantile(0.99)
+q99_df = data[data["zero_time"].dt.total_seconds() >= q99.total_seconds()]
+data.loc[data["zero_time"] >= q99, "99q"] = True
+data.fillna({"99q" : False}, inplace = True)
