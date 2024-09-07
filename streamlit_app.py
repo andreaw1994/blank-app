@@ -98,3 +98,4 @@ ax3.stem(q99_df["datetime"] - q99_df["zero_time"], q99_df["zero_time"])
 #         height = data.iloc[data[data["datetime"].isin(start)].index.values.astype(int) - 1]["good_objects"].dropna(),
 #         width = data[(data["datetime"] >= "2024-05-15 09:00:00") & data["99q"]]["zero_time"], align = "edge")
 
+st.pyplot(fig)
