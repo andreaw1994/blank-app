@@ -94,3 +94,86 @@ ax2.scatter(data.iloc[indices]["datetime"],
 ax3.stem(q99_df["datetime"] - q99_df["zero_time"], q99_df["zero_time"])
 
 st.pyplot(fig)
+
+#--------------------------------
+#Lukas script:
+
+# Part 2: Upload CSV Files
+st.write("### Step 1: Upload Your CSV Files")
+uploaded_files = st.file_uploader("Choose CSV files", type="csv", accept_multiple_files=True)
+
+if len(uploaded_files) != 3:
+    st.error("Please upload exactly three CSV files.")
+else:
+    # Part 3: Read and Process Uploaded Files
+    def process_csv(file, column_index):
+        # Load the CSV file into a pandas DataFrame
+        data = pd.read_csv(file)
+
+        # Copy the specified column to a new column at the end
+        data['good_copy'] = data.iloc[:, column_index]  # Assuming 'D' is the column to copy
+
+        # Fill any blanks in the new column 'good_copy' with the previous value using ffill()
+        data['good_copy'] = data['good_copy'].ffill()
+
+        # Calculate the difference between the current value and the previous value in 'good_copy'
+        data['difference'] = data['good_copy'].diff()
+
+        return data
+
+    # Process each CSV file in memory
+    data1 = process_csv(uploaded_files[0], 3)
+    data2 = process_csv(uploaded_files[1], 3)
+    data3 = process_csv(uploaded_files[2], 3)
+
+    st.write("### Step 2: Data Preview")
+    st.write("Preview of the first uploaded file:")
+    st.dataframe(data1.head())
+
+    # Part 4: Plotting Function
+    def plot_data(data, dataset_name, num_to_plot):
+        try:
+            # Filter out the rows where 'error_code' is 1705
+            filtered_data = data[data['error_code'] != 1705]
+
+            # Count the occurrences of each unique error message in the 'description' column
+            error_counts = filtered_data['description'].value_counts()
+
+            # Limit the number of error messages to plot
+            error_counts = error_counts.head(num_to_plot)
+
+            # Plot the occurrences using a bar chart
+            plt.figure(figsize=(14, 8))  # Increase figure size for better readability
+            error_counts.plot(kind='bar', color='#3498db', edgecolor='black')  # Add edge color for clarity
+
+            plt.title(f'Occurrences of Each Error Message in {dataset_name} (Excluding error_code 1705)', fontsize=16)
+            plt.xlabel('Error Message', fontsize=14)
+            plt.ylabel('Number of Occurrences', fontsize=14)
+
+            # Wrap x-axis labels to improve readability
+            plt.xticks(rotation=45, ha='right', fontsize=12)
+
+            # Add horizontal gridlines for better readability
+            plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+            plt.tight_layout()  # Adjust layout to fit labels
+            st.pyplot(plt)
+            plt.close()  # Close the plot after rendering to avoid memory issues
+
+        except Exception as e:
+            st.error(f"An error occurred while plotting: {e}")
+
+    # Part 5: User Interface for Plotting
+    st.write("### Step 3: Plot Data")
+    dataset = st.selectbox("Select Dataset", ["ppq1", "ppq2", "ppq3"])
+
+    # Adding a slider to select the number of error messages to plot
+    num_to_plot = st.slider("Select the number of error messages to plot", min_value=1, max_value=50, value=10)
+
+    if st.button("Plot Data"):
+        if dataset == 'ppq1':
+            plot_data(data1, 'ppq1', num_to_plot)
+        elif dataset == 'ppq2':
+            plot_data(data2, 'ppq2', num_to_plot)
+        elif dataset == 'ppq3':
+            plot_data(data3, 'ppq3', num_to_plot)
