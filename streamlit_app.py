@@ -111,7 +111,7 @@ else:
 #Adapted version of Josh's script below
 
 # Part 6: User Interface for Plotting
-st.write("### Step 3: Duration of long pauses (>99th percent), surrounding errors and good object production")
+st.write("### Step 3: Duration of long pauses (top 1%), surrounding errors and good object production")
 
 # Part 7: Use the currently selected dataset (`data_dict[dataset_name]`)
 data = data_dict[dataset_name]  # Set `data` to the selected dataset
