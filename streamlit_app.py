@@ -8,10 +8,10 @@ from functools import reduce
 #import ipywidgets as widgets
 #from IPython.display import display
 
-st.title("STE1 Manufacturing Analyser")
+st.title("STE1 Manufacturing Analyzer")
 
 st.write(
-    "This app allows you to interactively visualize and analyze key performance metrics and error patterns of a STE1 production run."
+    "This app allows you to interactively visualize and analyze key performance metrics and error patterns in STE1 production run."
 )
 
 st.write(
