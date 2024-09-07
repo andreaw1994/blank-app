@@ -110,18 +110,29 @@ else:
 #--------------------------------
 #Josh script
 
-data_dict[dataset_name]["datetime"] = pd.to_datetime(data_dict[dataset_name]["datetime"])
+# Continuation of the previous script...
 
-data["derivative_good_objects"] = data[data["good_objects"].notna()]["good_objects"].diff() / data[data["good_objects"].notna()]["datetime"].diff().dt.total_seconds()
+# Step 7: Use the currently selected dataset (`data_dict[dataset_name]`)
+data = data_dict[dataset_name]  # Set `data` to the selected dataset
+
+# Convert the "datetime" column to datetime format
+data["datetime"] = pd.to_datetime(data["datetime"])
+
+# Calculate the derivative of "good_objects" over time
+data["derivative_good_objects"] = (
+    data[data["good_objects"].notna()]["good_objects"].diff() / 
+    data[data["good_objects"].notna()]["datetime"].diff().dt.total_seconds()
+)
 data["derivative_good_objects"] = data["derivative_good_objects"].fillna(0)
 
-data
-
+# Initialize the "zero_time" column with 0 timedelta
+import datetime
 data["zero_time"] = datetime.timedelta()
 prev_der = None
 first_time = data.loc[data["good_objects"].first_valid_index(), "datetime"]
 start_from = data.loc[data["good_objects"].first_valid_index(), "good_objects"]
 
+# Loop through each row and calculate "zero_time" for transitions
 for i, row in enumerate(data.itertuples()):
     # Transition from 0 to positive derivative
     if prev_der is not None and row.derivative_good_objects > 0 and prev_der == 0 and row.good_objects != start_from:
@@ -135,46 +146,58 @@ for i, row in enumerate(data.itertuples()):
     # Update the previous derivative for the next iteration
     prev_der = row.derivative_good_objects
 
-sorted_times = data[data["zero_time"] > datetime.timedelta()]["zero_time"].sort_values(ascending = False)
+# Sort the "zero_time" values
+sorted_times = data[data["zero_time"] > datetime.timedelta()]["zero_time"].sort_values(ascending=False)
 
-
+# Plot zero_time occurrences
 fig, ax1 = plt.subplots()
 fig.set_size_inches(28.5, 15.5)
 
+# Scatter plot for zero_time occurrences
 ax1.scatter(data[data["zero_time"] > datetime.timedelta()]["datetime"], data[data["zero_time"] > datetime.timedelta()]["zero_time"].dt.total_seconds())
 
+# Display the plot in Streamlit
 st.pyplot(fig)
 
-
-
-
-# Change the quantile value here, affects the lower limit for the pause duration.
+# Calculate the 99th percentile of non-zero "zero_time"
 q99 = data[data["zero_time"] != datetime.timedelta()]["zero_time"].quantile(0.99)
 q99_df = data[data["zero_time"].dt.total_seconds() >= q99.total_seconds()]
 data.loc[data["zero_time"] >= q99, "99q"] = True
-data.fillna({"99q" : False}, inplace = True)
+data.fillna({"99q": False}, inplace=True)
 
+# Find errors surrounding the high pause durations
 errors = []
 indices = []
 good_counter = []
+
 for i in (q99_df["datetime"] - q99_df["zero_time"]):
-    # This controls the amount of seconds before and after the start of the pause that we look for errors in.
-    error_code = data[(data["datetime"] >= (i - datetime.timedelta(seconds = 10))) & (data["datetime"] <= (i + datetime.timedelta(seconds = 10)))]["description"]
+    # Adjust the window (seconds before and after the pause) to look for errors
+    error_code = data[(data["datetime"] >= (i - datetime.timedelta(seconds=10))) & (data["datetime"] <= (i + datetime.timedelta(seconds=10)))]["description"]
     errors.extend(error_code[error_code.notna()].values)
     indices.extend(error_code[error_code.notna()].index.values.astype(int))
 
-pd.DataFrame(errors).value_counts()
+# Display error counts in a DataFrame
+st.write(pd.DataFrame(errors).value_counts())
 
+# Plot results with multiple axes
 fig, ax1 = plt.subplots()
 fig.set_size_inches(28.5, 15.5)
 
+# Create multiple y-axes
 ax2 = ax1.twinx()
 ax3 = ax1.twinx()
 ax3.spines['right'].set_position(('outward', -40))  # Move the 3rd axis outward
+
+# Plot good_objects and inactive_time on the first axis
 ax1.plot(data[data["good_objects"] >= 5]["datetime"], data[data["good_objects"] >= 5]["good_objects"].ffill(), c='b')
 ax1.plot(data[data["good_objects"] >= 5]["datetime"], data[data["good_objects"] >= 5]["inactive_time"].ffill(), c='g')
-ax2.scatter(data.iloc[indices]["datetime"],
-            data.iloc[indices]["description"], c = 'r')
+
+# Plot errors on the second axis
+ax2.scatter(data.iloc[indices]["datetime"], data.iloc[indices]["description"], c='r')
+
+# Plot stem plot for zero_time occurrences on the third axis
 ax3.stem(q99_df["datetime"] - q99_df["zero_time"], q99_df["zero_time"])
 
+# Display the final plot in Streamlit
 st.pyplot(fig)
+
