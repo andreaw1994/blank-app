@@ -248,18 +248,18 @@ for i, row in enumerate(data.itertuples()):
 # Sort the "zero_time" values
 sorted_times = data[data["zero_time"] > datetime.timedelta()]["zero_time"].sort_values(ascending=False)
 
-# Plot zero_time occurrences
+# Plot Pause Durations (top 1%)
 fig, ax1 = plt.subplots()
 fig.set_size_inches(28.5, 15.5)
 
-# Scatter plot for zero_time occurrences
+# Scatter plot for Pause Durations (top 1%)
 ax1.scatter(data[data["zero_time"] > datetime.timedelta()]["datetime"], 
             data[data["zero_time"] > datetime.timedelta()]["zero_time"].dt.total_seconds())
 
 # Add labels and title
 ax1.set_xlabel('Datetime', fontsize=14)
-ax1.set_ylabel('Zero Time Duration (Seconds)', fontsize=14)
-ax1.set_title('Occurrences of Zero Time Durations', fontsize=16)
+ax1.set_ylabel('Pause Duration (top 1%) (seconds)', fontsize=14)
+ax1.set_title('Occurrences of Pause Durations (top 1%)', fontsize=16)
 ax1.grid(True)
 
 # Display the plot in Streamlit
@@ -305,8 +305,8 @@ ax1.plot(data[data["good_objects"] >= 5]["datetime"],
 ax2.scatter(data.iloc[indices]["datetime"], 
             data.iloc[indices]["description"], c='r', label='Errors')
 
-# Plot stem plot for zero_time occurrences on the third axis
-ax3.stem(q99_df["datetime"] - q99_df["zero_time"], q99_df["zero_time"], basefmt=" ", linefmt='m-', markerfmt='mo', label='99th Percentile Zero Time')
+# Plot stem plot for pause durations (top 1%) on the third axis
+ax3.stem(q99_df["datetime"] - q99_df["zero_time"], q99_df["zero_time"], basefmt=" ", linefmt='m-', markerfmt='mo', label='Pause Duration (top 1%)')
 
 # Add labels, title, and legends
 ax1.set_xlabel('Datetime', fontsize=14)
@@ -317,7 +317,7 @@ ax1.legend(loc='upper left')
 ax2.set_ylabel('Error Descriptions', fontsize=14)
 ax2.legend(loc='upper right')
 
-ax3.set_ylabel('99th Percentile Zero Time', fontsize=14)
+ax3.set_ylabel('Pause Duration (top 1%) (seconds)', fontsize=14)
 ax3.legend(loc='upper center')
 
 # Adjust layout to fit all elements
