@@ -123,15 +123,17 @@ def process_csv(file, column_index):
     return data
 
 if uploaded_files:
-    # Part 4: Process and store each CSV file in a dictionary
+    # Part 4: Process and store each CSV file in a dictionary, using the original filename
     data_dict = {}
-    for i, file in enumerate(uploaded_files):
-        data_dict[f"Dataset {i+1}"] = process_csv(file, 3)
+    for file in uploaded_files:
+        file_name = file.name  # Get the original filename
+        data_dict[file_name] = process_csv(file, 3)
 
     # Show a preview of the first uploaded file
     st.write("### Step 2: Data Preview")
-    st.write("Preview of the first uploaded file:")
-    st.dataframe(data_dict["Dataset 1"].head())
+    first_file = uploaded_files[0].name
+    st.write(f"Preview of the first uploaded file: {first_file}")
+    st.dataframe(data_dict[first_file].head())
 
     # Part 5: Plotting Function
     def plot_data(data, dataset_name, num_to_plot):
@@ -169,7 +171,7 @@ if uploaded_files:
     # Part 6: User Interface for Plotting
     st.write("### Step 3: Plot Data")
 
-    # Dynamically create a selection box with the uploaded datasets
+    # Dynamically create a selection box with the original filenames
     dataset_name = st.selectbox("Select Dataset", list(data_dict.keys()))
 
     # Adding a slider to select the number of error messages to plot
