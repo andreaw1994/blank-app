@@ -92,7 +92,7 @@ if uploaded_files:
             st.error(f"An error occurred while plotting: {e}")
 
     # Part 6: User Interface for Plotting
-    st.write("### Step 3: Plot Data")
+    st.write("### Step 3: Plot Occurrences of All Error Messages")
 
     # Dynamically create a selection box with the original filenames
     dataset_name = st.selectbox("Select Dataset", list(data_dict.keys()))
@@ -109,6 +109,9 @@ else:
 
 #--------------------------------
 #Adapted version of Josh's script below
+
+# Part 6: User Interface for Plotting
+st.write("### Step 3: Duration of long pauses (>99th percent), surrounding errors and good object production")
 
 # Part 7: Use the currently selected dataset (`data_dict[dataset_name]`)
 data = data_dict[dataset_name]  # Set `data` to the selected dataset
