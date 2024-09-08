@@ -261,24 +261,22 @@ if uploaded_file is not None:
     min_value = df_filtered['length_seconds'].min()
     max_value = df_filtered['length_seconds'].max()
 
-    # Calculate a base bin size using the Freedman-Diaconis rule for optimal binning
+    # Start by calculating an optimal bin size using the Freedman-Diaconis rule
     iqr = np.subtract(*np.percentile(df_filtered['length_seconds'], [75, 25]))
     bin_size = 2 * iqr / (len(df_filtered) ** (1 / 3))  # Freedman-Diaconis bin size
 
-    # Adjust the bin size so that the 99th percentile aligns with a bin boundary
-    bin_count = int(np.ceil((max_value - min_value) / bin_size))
-    bin_edges = np.linspace(min_value, max_value, bin_count)
+    # Adjust the bin size to ensure 99th percentile aligns with a bin edge
+    bin_size = (percentile_99 - min_value) / round((percentile_99 - min_value) / bin_size)
 
-    # Adjust bin size to ensure 99th percentile aligns with a bin edge
-    if percentile_99 % bin_size != 0:
-        bin_size = percentile_99 / (np.floor(percentile_99 / bin_size))
+    # Create the bins with the new bin size
+    bins = np.arange(min_value, max_value + bin_size, bin_size)
 
-    # Create the Plotly histogram figure with the adjusted bin size
+    # Create the Plotly histogram figure
     fig = go.Figure()
 
     fig.add_trace(go.Histogram(
         x=df_filtered['length_seconds'],
-        xbins=dict(start=min_value, end=max_value, size=bin_size),  # Set adaptive bin size
+        xbins=dict(start=min_value, end=max_value, size=bin_size),  # Adjust bin size
         marker=dict(color='lightblue', line=dict(color='black', width=1)),
         hovertemplate='Pause Duration: %{x:.2f}s<br>Count: %{y}<extra></extra>'
     ))
