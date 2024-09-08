@@ -113,23 +113,38 @@ if uploaded_file is not None:
 
 #------------
 
-def main():
-    st.write("### MODULE 2: Error Frequency Analysis")
+uploaded_files = st.file_uploader("Choose CSV files", type="csv", accept_multiple_files=True)
 
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-    
-    if uploaded_file is not None:
-        data = process_csv(uploaded_file)
-        
-        dataset_name = "Your Dataset"  # You can modify this name based on the dataset
+if uploaded_files:
+    data_dict = {}
+    for file in uploaded_files:
+        file_name = file.name
+        data_dict[file_name] = process_csv(file)
+
+    st.write("### Data Preview")
+    first_file = uploaded_files[0].name
+    st.write(f"Preview of the first uploaded file: {first_file}")
+    st.dataframe(data_dict[first_file].head())
+
+    st.write("### Analysis Options")
+
+    dataset_name = st.selectbox("Select Dataset", list(data_dict.keys()))
+    data = data_dict[dataset_name]
+
+    analysis_type = st.selectbox("Select Analysis Type", [
+        "Error Code Transition Matrix",
+        "Error Message Occurrences",
+        "Complex Analysis"
+    ])
+
+    if analysis_type == "Error Code Transition Matrix":
+        show_error_code_transition_matrix(data, dataset_name)
+    elif analysis_type == "Error Message Occurrences":
+        show_error_message_occurrences(data, dataset_name)
+    elif analysis_type == "Complex Analysis":
         show_complex_analysis(data, dataset_name)
-        
-        st.write("### --- Separate Analysis for the Entire Dataset ---")
-        show_error_analysis_entire_dataset(data)
-
-if __name__ == "__main__":
-    main()
-
+else:
+    st.error("Please upload at least one CSV file.")
 
 
 #--------
