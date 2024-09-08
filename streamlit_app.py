@@ -34,7 +34,7 @@ if uploaded_file is not None:
     df_filtered = df[df['length_seconds'] > 0]
 
     # Preview the first few rows of the filtered DataFrame
-    st.write("### Preview of the uploaded data (Excluding pauses with length 0)")
+    st.write("#### Preview of the uploaded data (Excluding pauses with length 0)")
     st.dataframe(df_filtered.head())
 
     # Part 3: Calculate the 99th percentile for 'length_seconds'
