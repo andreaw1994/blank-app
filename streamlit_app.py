@@ -273,7 +273,7 @@ import plotly.graph_objects as go
 
 # Part 1: Upload CSV File
 st.write("### Upload your CSV file with pause lengths")
-uploaded_file = st.file_uploader("Choose a CSV file", type="csv", key="unique_file_uploader")
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv", key="adaptive_file_uploader")
 
 # Check if a file has been uploaded
 if uploaded_file is not None:
@@ -293,15 +293,19 @@ if uploaded_file is not None:
     # Part 4: Plot the distribution of pause length (in seconds) with the vertical line at the 99th percentile
     st.write("### Zoomable Distribution of Pause Lengths (in seconds)")
 
-    # Create the Plotly histogram figure
-    fig = px.histogram(
-        df_filtered, 
-        x='length_seconds', 
-        nbins=50,  # Number of bins in the histogram
-        title="Distribution of Pause Durations (Excluding Zero-Length Pauses)",
-        labels={'length_seconds': 'Pause Duration (seconds)'},  # Axis label
-        template='plotly_white',  # Set the template for cleaner design
-    )
+    # Set initial bin size based on the data range
+    data_range = df_filtered['length_seconds'].max() - df_filtered['length_seconds'].min()
+    initial_bin_size = data_range / 50  # Start with around 50 bins
+
+    # Create the Plotly histogram figure with adaptive bin size
+    fig = go.Figure()
+
+    fig.add_trace(go.Histogram(
+        x=df_filtered['length_seconds'],
+        nbinsx=int(len(df_filtered) ** 0.5),  # Adaptive bin count based on the data size (square root rule)
+        marker=dict(color='lightblue', line=dict(color='black', width=1)),
+        hovertemplate='Pause Duration: %{x:.2f}s<br>Count: %{y}<extra></extra>'
+    ))
 
     # Add a vertical line at the 99th percentile
     fig.add_vline(
@@ -313,18 +317,42 @@ if uploaded_file is not None:
         annotation_position="top right"
     )
 
-    # Update layout for better visuals
+    # Update layout for zooming and interactive bin size
     fig.update_layout(
         xaxis_title="Pause Duration (seconds)",
         yaxis_title="Frequency",
+        title="Distribution of Pause Durations (Excluding Zero-Length Pauses)",
         title_x=0.5,  # Center the title
         dragmode="zoom",  # Enable zooming by default
+        template='plotly_white',
+    )
+
+    # Add buttons for zoom reset and adaptive binning
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                type="buttons",
+                direction="left",
+                buttons=list([
+                    dict(
+                        args=["xaxis.range", [df_filtered['length_seconds'].min(), df_filtered['length_seconds'].max()]],
+                        label="Reset Zoom",
+                        method="relayout"
+                    ),
+                ]),
+                pad={"r": 10, "t": 10},
+                showactive=True,
+                x=0.1,
+                xanchor="left",
+                y=1.1,
+                yanchor="top"
+            ),
+        ]
     )
 
     # Display the Plotly figure in Streamlit
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, use_container_width=True)
 
     # Display the calculated 99th percentile value
     st.write(f"### The 99th percentile of pause durations is {percentile_99:.2f} seconds (Excluding 0-length pauses).")
-
 
