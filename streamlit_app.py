@@ -114,7 +114,7 @@ if uploaded_file is not None:
 #------------
 
 def main():
-    st.title("Error Frequency Analysis")
+    st.write("### MODULE 2: Error Frequency Analysis")
 
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
     
