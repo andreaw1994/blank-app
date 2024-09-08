@@ -159,4 +159,3 @@ def show_complex_analysis(data, dataset_name):
 def process_csv(file):
     data = pd.read_csv(file)
     return data
-
