@@ -120,12 +120,12 @@ if uploaded_files:
         file_name = file.name
         data_dict[file_name] = process_csv(file)
 
-    st.write("### Data Preview")
+    st.write("## Data Preview")
     first_file = uploaded_files[0].name
     st.write(f"Preview of the first uploaded file: {first_file}")
     st.dataframe(data_dict[first_file].head())
 
-    st.write("### Analysis Options")
+    st.write("## Analysis Options")
 
     dataset_name = st.selectbox("Select Dataset", list(data_dict.keys()))
     data = data_dict[dataset_name]
@@ -390,7 +390,7 @@ import plotly.graph_objects as go
 import numpy as np
 
 # Part 1: Upload CSV File
-st.write("### Upload your CSV file with pause lengths")
+st.write("## Upload your CSV file with pause lengths")
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv", key="file_uploader")
 
 # Check if a file has been uploaded
@@ -402,7 +402,7 @@ if uploaded_file is not None:
     df_filtered = df[df['length_seconds'] > 0]
 
     # Preview the first few rows of the filtered DataFrame
-    st.write("### Preview of the uploaded data (Excluding pauses with length 0)")
+    st.write("## Preview of the uploaded data (Excluding pauses with length 0)")
     st.dataframe(df_filtered.head())
 
     # Part 3: Calculate the 99th percentile for 'length_seconds'
