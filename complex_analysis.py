@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime
+from functools import reduce
 import streamlit as st
 
 def trim_time(data):
@@ -84,41 +85,28 @@ def show_complex_analysis(data, dataset_name):
     if exclude_1705:
         title += "\n(Excluding Error Code 1705)"
     plt.title(title)
-    fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax1.transAxes)
+    fig.legend(loc="upper right", bbox_to_anchor=(1,1), bbox_transform=ax1.transAxes)
 
     st.pyplot(fig)
 
-    #### Error Analysis for errors around pauses (Top 5 Most Frequent) ####
-    st.write("### Error Analysis Around Pauses")
-    error_counts = pd.Series(errors).value_counts()
+    st.write("### Error Analysis")
+    error_counts = pd.Series(errors).value_counts().sort_values(ascending=False)
 
-    # Ensure error code 1705 is included and then select the top 5
-    if 1705 in error_counts.index:
-        top_errors = error_counts.loc[[1705]].append(error_counts.drop(1705).nlargest(4))
-    else:
-        top_errors = error_counts.nlargest(5)
-
-    # Normalize the counts by the total number of errors considered
-    total_errors = len(errors)
-    normalized_top_errors = top_errors / total_errors
-
-    # Plot for top 5 most frequent errors around pauses
+    # Create a bar chart using Matplotlib
     fig, ax = plt.subplots(figsize=(12, 6))
-    normalized_top_errors.plot(kind='bar', ax=ax, color='lightblue')
-
-    plt.title("Top 5 Most Frequent Errors Around Pauses (Normalized)")
-    plt.xlabel("Error Code")
-    plt.ylabel("Normalized Count (by total errors around pauses)")
+    error_counts.plot(kind='bar', ax=ax)
+    plt.title("Error Occurrences (Sorted by Count)")
+    plt.xlabel("Error Description")
+    plt.ylabel("Count")
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
 
     st.pyplot(fig)
 
-    # Display the top 5 errors around pauses in a table
-    st.write("### Top 5 Most Frequent Errors Around Pauses (Including 1705)")
-    st.table(normalized_top_errors.reset_index().rename(columns={"index": "Error Code", 0: "Normalized Count"}))
+    # Display the top 10 errors in a table
+    st.write("### Top 10 Most Frequent Errors")
+    st.table(error_counts.head(10).reset_index().rename(columns={"index": "Error Description", 0: "Count"}))
 
-    #### Zero Time Analysis and Longest Pauses ####
     st.write("### Zero Time Analysis")
     zero_time_stats = data[data["zero_time"] > datetime.timedelta()]["zero_time"].describe()
     st.write(zero_time_stats)
@@ -130,35 +118,3 @@ def show_complex_analysis(data, dataset_name):
 def process_csv(file):
     data = pd.read_csv(file)
     return data
-
-def show_error_analysis_entire_dataset(data):
-    st.write("### Error Analysis for Entire Dataset")
-    
-    # Count the error occurrences in the entire dataset
-    all_error_counts = data["description"].value_counts()
-
-    # Ensure error code 1705 is included and then select the top 5
-    if 1705 in all_error_counts.index:
-        top_all_errors = all_error_counts.loc[[1705]].append(all_error_counts.drop(1705).nlargest(4))
-    else:
-        top_all_errors = all_error_counts.nlargest(5)
-
-    # Normalize the counts by the total number of errors in the entire dataset
-    total_all_errors = len(data["description"].dropna())
-    normalized_top_all_errors = top_all_errors / total_all_errors
-
-    # Plot for top 5 most frequent errors in the entire dataset
-    fig, ax = plt.subplots(figsize=(12, 6))
-    normalized_top_all_errors.plot(kind='bar', ax=ax, color='lightgreen')
-
-    plt.title("Top 5 Most Frequent Errors in Entire Dataset (Normalized)")
-    plt.xlabel("Error Code")
-    plt.ylabel("Normalized Count (by total errors in dataset)")
-    plt.xticks(rotation=45, ha='right')
-    plt.tight_layout()
-
-    st.pyplot(fig)
-
-    # Display the top 5 errors in the entire dataset in a table
-    st.write("### Top 5 Most Frequent Errors in Entire Dataset (Including 1705)")
-    st.table(normalized_top_all_errors.reset_index().rename(columns={"index": "Error Code", 0: "Normalized Count"}))
