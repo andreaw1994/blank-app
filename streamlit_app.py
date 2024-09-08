@@ -47,6 +47,7 @@ else:
     st.error("Please upload at least one CSV file.")
 
 #--------
+#All scripts below should work fine without other .py files in the tree and perhaps without the script above
 
 import streamlit as st
 import pandas as pd
