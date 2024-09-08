@@ -287,7 +287,7 @@ if uploaded_file is not None:
         annotation_position="top right"
     )
 
-    # Update layout to allow zooming
+    # Update layout to allow zooming and set initial view
     fig.update_layout(
         xaxis_title="Pause Duration (seconds)",
         yaxis_title="Frequency",
@@ -295,6 +295,12 @@ if uploaded_file is not None:
         title_x=0.5,  # Center the title
         dragmode="zoom",  # Enable zooming
         template='plotly_white',
+        xaxis=dict(
+            range=[0, 500]  # Set initial x-axis range
+        ),
+        yaxis=dict(
+            range=[0, 30]  # Set initial y-axis range
+        ),
         # Ensure toolbar buttons are visible
         updatemenus=[
             dict(
