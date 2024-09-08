@@ -7,4 +7,5 @@ numpy
 ipywidgets
 IPython
 datetime
+openpyxl
 #functools
