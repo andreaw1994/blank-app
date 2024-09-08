@@ -4,6 +4,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+import datetime
+from functools import reduce
 from utils import process_csv
 from error_code_transition_matrix import show_error_code_transition_matrix
 from error_message_occurrences import show_error_message_occurrences
@@ -146,28 +149,6 @@ else:
     st.error("Please upload at least one CSV file.")
 
 
-#--------
-#All scripts below should work fine without other .py files in the tree and perhaps without the script above
-
-import streamlit as st
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import datetime
-from functools import reduce
-
-#import ipywidgets as widgets
-#from IPython.display import display
-
-st.title("STE1 Manufacturing Analyzer")
-
-st.write(
-    "This app allows you to interactively visualize and analyze key performance metrics and error patterns in STE1 production run."
-)
-
-st.write(
-    "TO DO: Converter that takes error, error code and continuous data file in XLSX format as input, and outputs MasterCSVs."
-)
 
 #--------------------------------
 #Adapted version of Lukas' script below
