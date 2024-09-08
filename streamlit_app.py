@@ -1,3 +1,5 @@
+#Imports
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -15,10 +17,9 @@ st.write(
 
 #----------------------------
 
-#Plotting the distribution of pause length as an interactive zoomable plot
+#Plot the distribution of pause length as an interactive zoomable plot
 
-# Part 1: Upload CSV File
-st.write("### MODULE 1: Pause Length Analysis")
+st.write("### Module 1: Pause Length Analysis")
 uploaded_file = st.file_uploader("Choose a CSV file with pause lengths", type="csv", key="file_uploader")
 
 # Check if a file has been uploaded
@@ -110,6 +111,7 @@ if uploaded_file is not None:
 
 #------------
 
+st.write("### Module 2: Error Message Analysis")
 uploaded_files = st.file_uploader("Choose CSV files", type="csv", accept_multiple_files=True)
 
 if uploaded_files:
