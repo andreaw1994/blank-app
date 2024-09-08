@@ -1,10 +1,15 @@
-# Main function to process and analyze data
 import streamlit as st
 import pandas as pd
 from utils import process_csv
 from error_code_transition_matrix import show_error_code_transition_matrix
 from error_message_occurrences import show_error_message_occurrences
 from complex_analysis import show_complex_analysis, process_csv
+
+st.title("STE1 Manufacturing Analyzer")
+
+st.write(
+    "This app allows you to interactively visualize and analyze key performance metrics and error patterns of a STE1 production run."
+)
 
 def main():
     st.title("Error Analysis App")
@@ -26,18 +31,6 @@ if __name__ == "__main__":
 
 #-------Lukas on 08.09.2024:
 
-import streamlit as st
-import pandas as pd
-from utils import process_csv
-from error_code_transition_matrix import show_error_code_transition_matrix
-from error_message_occurrences import show_error_message_occurrences
-from complex_analysis import show_complex_analysis, process_csv
-
-st.title("STE1 Manufacturing Analyzer")
-
-st.write(
-    "This app allows you to interactively visualize and analyze key performance metrics and error patterns of a STE1 production run."
-)
 
 uploaded_files = st.file_uploader("Choose CSV files", type="csv", accept_multiple_files=True)
 
