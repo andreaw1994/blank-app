@@ -1,3 +1,22 @@
+# Main function to process and analyze data
+def main():
+    st.title("Error Analysis App")
+
+    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+    
+    if uploaded_file is not None:
+        data = process_csv(uploaded_file)
+        
+        dataset_name = "Your Dataset"  # You can modify this name based on the dataset
+        show_complex_analysis(data, dataset_name)
+        
+        st.write("### --- Separate Analysis for the Entire Dataset ---")
+        show_error_analysis_entire_dataset(data)
+
+if __name__ == "__main__":
+    main()
+
+
 #-------Lukas on 08.09.2024:
 
 import streamlit as st
