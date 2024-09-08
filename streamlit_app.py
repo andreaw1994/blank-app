@@ -272,7 +272,7 @@ import plotly.express as px
 
 # Part 1: Upload CSV File
 st.write("### Upload your CSV file with pause lengths")
-uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv", key="unique_file_uploader")
 
 # Check if a file has been uploaded
 if uploaded_file is not None:
