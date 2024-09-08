@@ -12,7 +12,7 @@ st.write(
 )
 
 def main():
-    st.title("Error Analysis App")
+    st.title("Error Frequency Analysis")
 
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
     
