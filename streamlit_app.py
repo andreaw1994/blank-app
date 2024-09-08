@@ -21,8 +21,8 @@ import plotly.graph_objects as go
 import numpy as np
 
 # Part 1: Upload CSV File
-st.write("### Upload your CSV file with pause lengths")
-uploaded_file = st.file_uploader("Choose a CSV file", type="csv", key="file_uploader")
+st.write("### MODULE 1: Pause Length Analysis")
+uploaded_file = st.file_uploader("Choose a CSV file with pause lengths", type="csv", key="file_uploader")
 
 # Check if a file has been uploaded
 if uploaded_file is not None:
