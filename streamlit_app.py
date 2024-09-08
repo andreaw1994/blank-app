@@ -264,3 +264,45 @@ if uploaded_file is not None:
     # Display the plot in Streamlit
     st.pyplot(plt)
 
+#--------------
+
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+# Part 1: Upload CSV File
+st.write("### Upload your CSV file with pause lengths")
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+
+# Check if a file has been uploaded
+if uploaded_file is not None:
+    # Part 2: Read the CSV into a pandas DataFrame
+    df = pd.read_csv(uploaded_file)
+
+    # Preview the first few rows of the DataFrame
+    st.write("### Preview of the uploaded data")
+    st.dataframe(df.head())
+
+    # Part 3: Plot the distribution of pause length (in seconds)
+    st.write("### Zoomable Distribution of Pause Lengths (in seconds)")
+
+    # Create the Plotly figure
+    fig = px.histogram(
+        df, 
+        x='length_seconds', 
+        nbins=50,  # Number of bins in the histogram
+        title="Distribution of Pause Durations",
+        labels={'length_seconds': 'Pause Duration (seconds)'},  # Axis label
+        template='plotly_white',  # Set the template for cleaner design
+    )
+
+    # Update layout for better visuals
+    fig.update_layout(
+        xaxis_title="Pause Duration (seconds)",
+        yaxis_title="Frequency",
+        title_x=0.5,  # Center the title
+        dragmode="zoom",  # Enable zooming by default
+    )
+
+    # Display the Plotly figure in Streamlit
+    st.plotly_chart(fig)
