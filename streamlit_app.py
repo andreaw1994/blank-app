@@ -235,8 +235,8 @@ st.pyplot(fig)
 
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
+import numpy as np
 
 # Part 1: Upload CSV File
 st.write("### Upload your CSV file with pause lengths")
@@ -257,19 +257,28 @@ if uploaded_file is not None:
     # Part 3: Calculate the 99th percentile for 'length_seconds' (excluding 0 values)
     percentile_99 = df_filtered['length_seconds'].quantile(0.99)
 
-    # Part 4: Plot the distribution of pause length (in seconds) with the vertical line at the 99th percentile
-    st.write("### Zoomable Distribution of Pause Lengths (in seconds)")
+    # Part 4: Determine bin size such that the 99th percentile aligns with a bin edge
+    min_value = df_filtered['length_seconds'].min()
+    max_value = df_filtered['length_seconds'].max()
 
-    # Set initial bin size based on the data range
-    data_range = df_filtered['length_seconds'].max() - df_filtered['length_seconds'].min()
-    initial_bin_size = data_range / 50  # Start with around 50 bins
+    # Calculate a base bin size using the Freedman-Diaconis rule for optimal binning
+    iqr = np.subtract(*np.percentile(df_filtered['length_seconds'], [75, 25]))
+    bin_size = 2 * iqr / (len(df_filtered) ** (1 / 3))  # Freedman-Diaconis bin size
 
-    # Create the Plotly histogram figure with adaptive bin size
+    # Adjust the bin size so that the 99th percentile aligns with a bin boundary
+    bin_count = int(np.ceil((max_value - min_value) / bin_size))
+    bin_edges = np.linspace(min_value, max_value, bin_count)
+
+    # Adjust bin size to ensure 99th percentile aligns with a bin edge
+    if percentile_99 % bin_size != 0:
+        bin_size = percentile_99 / (np.floor(percentile_99 / bin_size))
+
+    # Create the Plotly histogram figure with the adjusted bin size
     fig = go.Figure()
 
     fig.add_trace(go.Histogram(
         x=df_filtered['length_seconds'],
-        nbinsx=int(len(df_filtered) ** 0.5),  # Adaptive bin count based on the data size (square root rule)
+        xbins=dict(start=min_value, end=max_value, size=bin_size),  # Set adaptive bin size
         marker=dict(color='lightblue', line=dict(color='black', width=1)),
         hovertemplate='Pause Duration: %{x:.2f}s<br>Count: %{y}<extra></extra>'
     ))
@@ -294,31 +303,8 @@ if uploaded_file is not None:
         template='plotly_white',
     )
 
-    # Add buttons for zoom reset and adaptive binning
-    fig.update_layout(
-        updatemenus=[
-            dict(
-                type="buttons",
-                direction="left",
-                buttons=list([
-                    dict(
-                        args=["xaxis.range", [df_filtered['length_seconds'].min(), df_filtered['length_seconds'].max()]],
-                        label="Reset Zoom",
-                        method="relayout"
-                    ),
-                ]),
-                pad={"r": 10, "t": 10},
-                showactive=True,
-                x=0.1,
-                xanchor="left",
-                y=1.1,
-                yanchor="top"
-            ),
-        ]
-    )
-
-    # Display the Plotly figure in Streamlit
-    st.plotly_chart(fig, use_container_width=True)
+    # Part 5: Plotly chart display configuration without mode bar
+    st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
     # Display the calculated 99th percentile value
     st.write(f"### The 99th percentile of pause durations is {percentile_99:.2f} seconds (Excluding 0-length pauses).")
