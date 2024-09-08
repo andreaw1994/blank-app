@@ -123,7 +123,7 @@ if uploaded_files:
         file_name = file.name
         data_dict[file_name] = process_csv(file)
 
-    st.write("## Data Preview")
+    st.write("#### Preview of the uploaded data")
     first_file = uploaded_files[0].name
     st.write(f"Preview of the first uploaded file: {first_file}")
     st.dataframe(data_dict[first_file].head())
