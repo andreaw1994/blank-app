@@ -240,7 +240,7 @@ import numpy as np
 
 # Part 1: Upload CSV File
 st.write("### Upload your CSV file with pause lengths")
-uploaded_file = st.file_uploader("Choose a CSV file", type="csv", key="adaptive_file_uploader")
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv", key="file_uploader")
 
 # Check if a file has been uploaded
 if uploaded_file is not None:
@@ -254,21 +254,17 @@ if uploaded_file is not None:
     st.write("### Preview of the uploaded data (Excluding pauses with length 0)")
     st.dataframe(df_filtered.head())
 
-    # Part 3: Calculate the 99th percentile for 'length_seconds' (excluding 0 values)
+    # Part 3: Calculate the 99th percentile for 'length_seconds'
     percentile_99 = df_filtered['length_seconds'].quantile(0.99)
 
-    # Part 4: Determine bin size such that the 99th percentile aligns with a bin edge
+    # Part 4: Calculate bin size and ensure the 99th percentile aligns with a bin edge
     min_value = df_filtered['length_seconds'].min()
     max_value = df_filtered['length_seconds'].max()
 
-    # Start by calculating an optimal bin size using the Freedman-Diaconis rule
-    iqr = np.subtract(*np.percentile(df_filtered['length_seconds'], [75, 25]))
-    bin_size = 2 * iqr / (len(df_filtered) ** (1 / 3))  # Freedman-Diaconis bin size
+    # Fixed bin size to ensure 99th percentile aligns with a bin edge
+    bin_size = (percentile_99 - min_value) / np.ceil((percentile_99 - min_value) / 20)  # Choose 20 as an arbitrary bin count
 
-    # Adjust the bin size to ensure 99th percentile aligns with a bin edge
-    bin_size = (percentile_99 - min_value) / round((percentile_99 - min_value) / bin_size)
-
-    # Create the bins with the new bin size
+    # Create bins starting from min value to max value
     bins = np.arange(min_value, max_value + bin_size, bin_size)
 
     # Create the Plotly histogram figure
@@ -276,7 +272,7 @@ if uploaded_file is not None:
 
     fig.add_trace(go.Histogram(
         x=df_filtered['length_seconds'],
-        xbins=dict(start=min_value, end=max_value, size=bin_size),  # Adjust bin size
+        xbins=dict(start=min_value, end=max_value, size=bin_size),  # Use calculated bin size
         marker=dict(color='lightblue', line=dict(color='black', width=1)),
         hovertemplate='Pause Duration: %{x:.2f}s<br>Count: %{y}<extra></extra>'
     ))
@@ -291,13 +287,13 @@ if uploaded_file is not None:
         annotation_position="top right"
     )
 
-    # Update layout for zooming and interactive bin size
+    # Update layout to allow zooming
     fig.update_layout(
         xaxis_title="Pause Duration (seconds)",
         yaxis_title="Frequency",
         title="Distribution of Pause Durations (Excluding Zero-Length Pauses)",
         title_x=0.5,  # Center the title
-        dragmode="zoom",  # Enable zooming by default
+        dragmode="zoom",  # Enable zooming
         template='plotly_white',
     )
 
