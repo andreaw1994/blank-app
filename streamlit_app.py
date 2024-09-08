@@ -280,22 +280,25 @@ if uploaded_file is not None:
     # Part 2: Read the CSV into a pandas DataFrame
     df = pd.read_csv(uploaded_file)
 
-    # Preview the first few rows of the DataFrame
-    st.write("### Preview of the uploaded data")
-    st.dataframe(df.head())
+    # Exclude rows where 'length_seconds' is 0
+    df_filtered = df[df['length_seconds'] > 0]
 
-    # Part 3: Calculate the 99th percentile for 'length_seconds'
-    percentile_99 = df['length_seconds'].quantile(0.99)
+    # Preview the first few rows of the filtered DataFrame
+    st.write("### Preview of the uploaded data (Excluding pauses with length 0)")
+    st.dataframe(df_filtered.head())
+
+    # Part 3: Calculate the 99th percentile for 'length_seconds' (excluding 0 values)
+    percentile_99 = df_filtered['length_seconds'].quantile(0.99)
 
     # Part 4: Plot the distribution of pause length (in seconds) with the vertical line at the 99th percentile
     st.write("### Zoomable Distribution of Pause Lengths (in seconds)")
 
     # Create the Plotly histogram figure
     fig = px.histogram(
-        df, 
+        df_filtered, 
         x='length_seconds', 
         nbins=50,  # Number of bins in the histogram
-        title="Distribution of Pause Durations",
+        title="Distribution of Pause Durations (Excluding Zero-Length Pauses)",
         labels={'length_seconds': 'Pause Duration (seconds)'},  # Axis label
         template='plotly_white',  # Set the template for cleaner design
     )
@@ -322,5 +325,6 @@ if uploaded_file is not None:
     st.plotly_chart(fig)
 
     # Display the calculated 99th percentile value
-    st.write(f"### The 99th percentile of pause durations is {percentile_99:.2f} seconds.")
+    st.write(f"### The 99th percentile of pause durations is {percentile_99:.2f} seconds (Excluding 0-length pauses).")
+
 
