@@ -107,7 +107,7 @@ if uploaded_file is not None:
     st.plotly_chart(fig, use_container_width=True)
 
     # Display the calculated 99th percentile value
-    st.write(f"### The 99th percentile of pause durations is {percentile_99:.2f} seconds (Excluding 0-length pauses).")
+    st.write(f"## The 99th percentile of pause durations is {percentile_99:.2f} seconds (Excluding 0-length pauses).")
 
 #------------
 
