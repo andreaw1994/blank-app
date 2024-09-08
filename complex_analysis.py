@@ -57,7 +57,7 @@ def show_complex_analysis(data, dataset_name):
     col1, col2, col3 = st.columns(3)
     with col1:
         # Slider to select top n% longest pauses
-        top_percent = st.slider("Select top % longest pauses", 1, 99, 99, 1)  # Slider from 1% to 99%
+        top_percent = st.slider("Select top n% longest pauses", 1, 99, 99, 1)  # Slider from 1% to 99%
         # Convert top percent to quantile (invert logic: higher percent means higher quantile)
         quantile = 1 - (top_percent / 100.0)  # Inverted logic
     with col2:
