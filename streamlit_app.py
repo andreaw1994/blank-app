@@ -295,11 +295,32 @@ if uploaded_file is not None:
         title_x=0.5,  # Center the title
         dragmode="zoom",  # Enable zooming
         template='plotly_white',
+        # Ensure toolbar buttons are visible
+        updatemenus=[
+            dict(
+                type="buttons",
+                buttons=[
+                    dict(label="Zoom",
+                         method="relayout",
+                         args=[{"xaxis.type": "linear", "yaxis.type": "linear"}]),
+                    dict(label="Reset",
+                         method="relayout",
+                         args=[{"xaxis.autorange": True, "yaxis.autorange": True}])
+                ],
+                direction="down",
+                showactive=False,
+                x=0.17,
+                xanchor="left",
+                y=1.15,
+                yanchor="top"
+            )
+        ]
     )
 
-    # Part 5: Plotly chart display configuration without mode bar
-    st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+    # Display the plot with toolbar
+    st.plotly_chart(fig, use_container_width=True)
 
     # Display the calculated 99th percentile value
     st.write(f"### The 99th percentile of pause durations is {percentile_99:.2f} seconds (Excluding 0-length pauses).")
+
 
