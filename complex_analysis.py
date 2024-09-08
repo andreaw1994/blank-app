@@ -56,9 +56,10 @@ def show_complex_analysis(data, dataset_name):
     st.write("### Analysis Parameters")
     col1, col2, col3 = st.columns(3)
     with col1:
-        # Replacing quantile slider with top % longest pauses slider
-        top_percent = st.slider("Select top % longest pauses", 1, 100, 99, 1)  # Slider from 1% to 100%
-        quantile = top_percent / 100.0  # Convert top percent to quantile
+        # Slider to select top % longest pauses
+        top_percent = st.slider("Select top % longest pauses", 1, 99, 99, 1)  # Slider from 1% to 99%
+        # Convert top percent to quantile (invert logic: higher percent means higher quantile)
+        quantile = 1 - (top_percent / 100.0)  # Inverted logic
     with col2:
         pre_start = st.slider("Pre-start time (seconds)", 0, 100, 10, 1)
     with col3:
