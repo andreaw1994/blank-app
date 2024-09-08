@@ -268,7 +268,6 @@ if uploaded_file is not None:
 
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 
 # Part 1: Upload CSV File
@@ -295,7 +294,6 @@ if uploaded_file is not None:
 
     # Set initial bin size based on the data range
     data_range = df_filtered['length_seconds'].max() - df_filtered['length_seconds'].min()
-    initial_bin_size = data_range / 50  # Start with around 50 bins
 
     # Create the Plotly histogram figure with adaptive bin size
     fig = go.Figure()
@@ -327,31 +325,8 @@ if uploaded_file is not None:
         template='plotly_white',
     )
 
-    # Add buttons for zoom reset and adaptive binning
-    fig.update_layout(
-        updatemenus=[
-            dict(
-                type="buttons",
-                direction="left",
-                buttons=list([
-                    dict(
-                        args=["xaxis.range", [df_filtered['length_seconds'].min(), df_filtered['length_seconds'].max()]],
-                        label="Reset Zoom",
-                        method="relayout"
-                    ),
-                ]),
-                pad={"r": 10, "t": 10},
-                showactive=True,
-                x=0.1,
-                xanchor="left",
-                y=1.1,
-                yanchor="top"
-            ),
-        ]
-    )
-
-    # Display the Plotly figure in Streamlit
-    st.plotly_chart(fig, use_container_width=True)
+    # Part 5: Plotly chart display configuration without mode bar
+    st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
     # Display the calculated 99th percentile value
     st.write(f"### The 99th percentile of pause durations is {percentile_99:.2f} seconds (Excluding 0-length pauses).")
