@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+import plotly.graph_objects as go
 from utils import process_csv
 from error_code_transition_matrix import show_error_code_transition_matrix
 from error_message_occurrences import show_error_message_occurrences
@@ -14,11 +16,6 @@ st.write(
 #----------------------------
 
 #Plotting the distribution of pause length as an interactive zoomable plot
-
-import streamlit as st
-import pandas as pd
-import plotly.graph_objects as go
-import numpy as np
 
 # Part 1: Upload CSV File
 st.write("### MODULE 1: Pause Length Analysis")
