@@ -1,6 +1,8 @@
 import pandas as pd
-import datetime
+import numpy as np
 import matplotlib.pyplot as plt
+import datetime
+from functools import reduce
 import streamlit as st
 
 def trim_time(data):
@@ -69,29 +71,49 @@ def show_complex_analysis(data, dataset_name):
 
     data, errors, indices = calculate_error_durations(data=data, quantile=quantile, pre_start=pre_start, post_start=post_start)
 
-    # Error analysis and bar plot to show only the top 10 errors, styled like code 2
+    fig, ax1 = plt.subplots(figsize=(28.5, 15.5))
+    ax2 = ax1.twinx()
+
+    ax1.plot(data["datetime"], data["good_objects"].ffill(), c='b', label='Good Objects')
+    ax2.scatter(data.iloc[indices]["datetime"], data.iloc[indices]["description"], c='r', label='Errors')
+
+    ax1.set_xlabel('DateTime')
+    ax1.set_ylabel('Good Objects', color='b')
+    ax2.set_ylabel('Error Descriptions', color='r')
+
+    title = f"Complex Analysis for {dataset_name}\n(Quantile: {quantile}, Pre-start: {pre_start}s, Post-start: {post_start}s)"
+    if exclude_1705:
+        title += "\n(Excluding Error Code 1705)"
+    plt.title(title)
+    fig.legend(loc="upper right", bbox_to_anchor=(1,1), bbox_transform=ax1.transAxes)
+
+    st.pyplot(fig)
+
     st.write("### Error Analysis")
-    error_counts = pd.Series(errors).value_counts().sort_values(ascending=False).head(10)
+    error_counts = pd.Series(errors).value_counts().sort_values(ascending=False)
 
-    # Create a bar chart using Matplotlib with the same style as code 2
-    fig, ax = plt.subplots(figsize=(14, 8))
-    error_counts.plot(kind='bar', ax=ax, color='#3498db', edgecolor='black')
-
-    # Set title, labels, and ticks
-    plt.title(f'Occurrences of Each Error Message in {dataset_name}', fontsize=16)
-    plt.xlabel("Error Description", fontsize=14)
-    plt.ylabel("Number of Occurrences", fontsize=14)
-    plt.xticks(rotation=45, ha='right', fontsize=12)
-
-    # Add grid and layout adjustments
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    # Create a bar chart using Matplotlib
+    fig, ax = plt.subplots(figsize=(12, 6))
+    error_counts.plot(kind='bar', ax=ax)
+    plt.title("Error Occurrences (Sorted by Count)")
+    plt.xlabel("Error Description")
+    plt.ylabel("Count")
+    plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
 
     st.pyplot(fig)
 
     # Display the top 10 errors in a table
     st.write("### Top 10 Most Frequent Errors")
-    st.table(error_counts.reset_index().rename(columns={"index": "Error Description", 0: "Count"}))
+    st.table(error_counts.head(10).reset_index().rename(columns={"index": "Error Description", 0: "Count"}))
+
+    st.write("### Zero Time Analysis")
+    zero_time_stats = data[data["zero_time"] > datetime.timedelta()]["zero_time"].describe()
+    st.write(zero_time_stats)
+
+    st.write("### Longest Pauses")
+    longest_pauses = data[data[f"q{quantile}"]]["zero_time"].sort_values(ascending=False).head(10)
+    st.write(longest_pauses)
 
 def process_csv(file):
     data = pd.read_csv(file)
