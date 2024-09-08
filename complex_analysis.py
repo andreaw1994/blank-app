@@ -118,8 +118,23 @@ def show_complex_analysis(data, dataset_name):
     st.write("### Top 5 Most Frequent Errors Around Pauses (Including 1705)")
     st.table(normalized_top_errors.reset_index().rename(columns={"index": "Error Code", 0: "Normalized Count"}))
 
-    #### Error Analysis for entire dataset (Top 5 Most Frequent) ####
+    #### Zero Time Analysis and Longest Pauses ####
+    st.write("### Zero Time Analysis")
+    zero_time_stats = data[data["zero_time"] > datetime.timedelta()]["zero_time"].describe()
+    st.write(zero_time_stats)
+
+    st.write("### Longest Pauses")
+    longest_pauses = data[data[f"q{quantile}"]]["zero_time"].sort_values(ascending=False).head(10)
+    st.write(longest_pauses)
+
+def process_csv(file):
+    data = pd.read_csv(file)
+    return data
+
+def show_error_analysis_entire_dataset(data):
     st.write("### Error Analysis for Entire Dataset")
+    
+    # Count the error occurrences in the entire dataset
     all_error_counts = data["description"].value_counts()
 
     # Ensure error code 1705 is included and then select the top 5
@@ -147,15 +162,3 @@ def show_complex_analysis(data, dataset_name):
     # Display the top 5 errors in the entire dataset in a table
     st.write("### Top 5 Most Frequent Errors in Entire Dataset (Including 1705)")
     st.table(normalized_top_all_errors.reset_index().rename(columns={"index": "Error Code", 0: "Normalized Count"}))
-
-    st.write("### Zero Time Analysis")
-    zero_time_stats = data[data["zero_time"] > datetime.timedelta()]["zero_time"].describe()
-    st.write(zero_time_stats)
-
-    st.write("### Longest Pauses")
-    longest_pauses = data[data[f"q{quantile}"]]["zero_time"].sort_values(ascending=False).head(10)
-    st.write(longest_pauses)
-
-def process_csv(file):
-    data = pd.read_csv(file)
-    return data
