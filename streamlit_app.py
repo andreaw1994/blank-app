@@ -128,7 +128,7 @@ if uploaded_files:
     st.write(f"Preview of the first uploaded file: {first_file}")
     st.dataframe(data_dict[first_file].head())
 
-    st.write("## Analysis Options")
+    st.write("#### Analysis Options")
 
     dataset_name = st.selectbox("Select Dataset", list(data_dict.keys()))
     data = data_dict[dataset_name]
