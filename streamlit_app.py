@@ -228,3 +228,39 @@ fig.subplots_adjust(right=0.85)  # Make room for the third y-axis
 
 # Display the final plot in Streamlit
 st.pyplot(fig)
+
+#-----
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Part 1: Upload CSV File
+st.write("### Upload your CSV file with pause lengths")
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+
+# Check if a file has been uploaded
+if uploaded_file is not None:
+    # Part 2: Read the CSV into a pandas DataFrame
+    df = pd.read_csv(uploaded_file)
+
+    # Preview the first few rows of the DataFrame
+    st.write("### Preview of the uploaded data")
+    st.dataframe(df.head())
+
+    # Part 3: Plot the distribution of pause length (in seconds)
+    st.write("### Distribution of Pause Lengths (in seconds)")
+
+    # Create the plot
+    plt.figure(figsize=(10, 6))
+    sns.histplot(df['length_seconds'], bins=30, kde=True, color='blue')
+
+    # Add title and labels
+    plt.title('Distribution of Pause Durations', fontsize=16)
+    plt.xlabel('Pause Duration (seconds)', fontsize=14)
+    plt.ylabel('Frequency', fontsize=14)
+
+    # Display the plot in Streamlit
+    st.pyplot(plt)
+
