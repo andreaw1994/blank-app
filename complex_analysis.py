@@ -56,7 +56,9 @@ def show_complex_analysis(data, dataset_name):
     st.write("### Analysis Parameters")
     col1, col2, col3 = st.columns(3)
     with col1:
-        quantile = st.slider("Select quantile for analysis", 0.01, 0.99, 0.99, 0.01)
+        # Replacing quantile slider with top % longest pauses slider
+        top_percent = st.slider("Select top % longest pauses", 1, 100, 99, 1)  # Slider from 1% to 100%
+        quantile = top_percent / 100.0  # Convert top percent to quantile
     with col2:
         pre_start = st.slider("Pre-start time (seconds)", 0, 100, 10, 1)
     with col3:
@@ -69,11 +71,11 @@ def show_complex_analysis(data, dataset_name):
 
     data, errors, indices = calculate_error_durations(data=data, quantile=quantile, pre_start=pre_start, post_start=post_start)
 
-    # Error analysis and bar plot to show only the top 10 errors, styled like code 2
+    # Error analysis and bar plot to show only the top 10 errors
     st.write("### Error Analysis")
     error_counts = pd.Series(errors).value_counts().sort_values(ascending=False).head(10)
 
-    # Create a bar chart using Matplotlib with the same style as code 2
+    # Create a bar chart using Matplotlib
     fig, ax = plt.subplots(figsize=(14, 8))
     error_counts.plot(kind='bar', ax=ax, color='#3498db', edgecolor='black')
 
